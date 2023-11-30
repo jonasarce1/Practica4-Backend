@@ -43,6 +43,7 @@ trabajadorSchema.post("findOneAndUpdate", async function (trabajador: Trabajador
         await EmpresaModel.findOneAndUpdate({_id:trabajador.empresa}, {$pull: {trabajadores: trabajador._id}}); //Borramos al trabajador de la lista de trabajadores de la empresa
     }else{ //Si el trabajador esta contratado
         await EmpresaModel.findOneAndUpdate({_id:trabajador.empresa}, {$push: {trabajadores: trabajador._id}}); //Añadimos al trabajador a la lista de trabajadores de la empresa
+        throw new Error("HOLA");
     }
 });
 
