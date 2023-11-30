@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Tarea, Estado} from "../types.ts";
 import { TrabajadorModel, TrabajadorModelType } from "./trabajador.ts";
-import { EmpresaModelType } from "./empresa.ts";
+import { EmpresaModel, EmpresaModelType } from "./empresa.ts";
 
 const Schema = mongoose.Schema;
 
@@ -26,9 +26,13 @@ tareaSchema.path("estado").validate(function(valor: Estado){
 tareaSchema.path("empresa").validate(async function (valor: EmpresaModelType) {
     const trabajador = await TrabajadorModel.findById(this.trabajador);
     if(trabajador){
-        return trabajador.empresa === valor._id;
+        if(trabajador.empresa){
+            if(trabajador.empresa.toString() !== valor._id.toString()){
+                return false;
+            }
+        }
     }
-    return false;
+    return true;
 })
 
 //Validate numero de tareas (no puede haber mas de 10 tareas)
