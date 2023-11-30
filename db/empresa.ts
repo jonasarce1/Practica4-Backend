@@ -17,7 +17,10 @@ empresaSchema.path("tipo").validate(function(valor: Entidad) {
 
 //Validate numero de trabajadores (no puede haber mas de 10 trabajadores)
 empresaSchema.path("trabajadores").validate(function (trabajadores:Array<mongoose.Schema.Types.ObjectId>) {
-    return trabajadores.length <= 10;
+    if(trabajadores){
+        return trabajadores.length <= 10;
+    }
+    return true;
 })
 
 //Middleware hook si la empresa se borra se despiden a todos los trabajadores y se les borran todas las tareas
