@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 
 import { getEmpresa } from "./resolvers/getEmpresa.ts";
+import { getEmpresas } from "./resolvers/getEmpresas.ts";
 import { postEmpresa } from "./resolvers/postEmpresa.ts";
 import { deleteEmpresa } from "./resolvers/deleteEmpresa.ts";
 
@@ -18,6 +19,8 @@ const app = express();
 app.use(express.json());
 
 app.get("/business/:id", getEmpresa); //Devuelve una empresa segun su id
+
+app.get("/business", getEmpresas); //Devuelve todas las empresas
 
 app.post("/business", postEmpresa); //Crea una empresa segun un nombre y un tipo de entidad
 

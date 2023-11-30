@@ -2,7 +2,7 @@
 import {Request, Response} from "express";
 import mongoose from "mongoose";
 
-import { EmpresaModel, EmpresaModelType } from "../db/empresa.ts";
+import { EmpresaModel } from "../db/empresa.ts";
 
 export const deleteEmpresa = async(req:Request<{id:string}>, res:Response<string | {error:unknown}>) => {
     try{
