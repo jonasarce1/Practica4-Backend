@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Trabajador } from "../types.ts";
 import { TareaModel } from "./tarea.ts";
+import { EmpresaModel } from "./empresa.ts";
 
 const Schema = mongoose.Schema;
 
@@ -38,8 +39,12 @@ trabajadorSchema.path("tareas").validate(function (tareas:Array<mongoose.Schema.
 //Middleware hook para fire, cuando el trabajador no tiene empresa, se borran todas sus tareas
 trabajadorSchema.post("findOneAndUpdate", async function (doc: TrabajadorModelType) {
     const trabajador = await TrabajadorModel.findById(doc._id).exec(); //Accede al trabajador actualizado
-
     if (trabajador && !trabajador.empresa) {
+        //actualizamos la empresa que tenga el trabajador
+        await EmpresaModel.updateOne(
+            { trabajadores: trabajador._id },
+            { $pull: { trabajadores: trabajador._id } }
+        );
         await TareaModel.deleteMany({ trabajador: trabajador._id });
     }
 });
