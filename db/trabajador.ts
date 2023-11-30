@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { Trabajador } from "../types.ts";
 import { TareaModel } from "./tarea.ts";
-import { EmpresaModel } from "./empresa.ts";
 
 const Schema = mongoose.Schema;
 
@@ -35,19 +34,6 @@ trabajadorSchema.path("tareas").validate(function (tareas:Array<mongoose.Schema.
         return tareas.length <= 10;
     }
 })
-
-//Middleware hook para hire y fire
-trabajadorSchema.post("findOneAndUpdate", async function (trabajador: TrabajadorModelType) {
-    if(trabajador.empresa === null){ //Si el trabajador esta despedido
-        await TareaModel.deleteMany({trabajador: trabajador._id}); //Borramos todas sus tareas
-        await EmpresaModel.findOneAndUpdate({_id:trabajador.empresa}, {$pull: {trabajadores: trabajador._id}}); //Borramos al trabajador de la lista de trabajadores de la empresa
-        throw new Error("Sigue mal, la empresa es: " + trabajador.empresa);
-    }else{ //Si el trabajador esta contratado
-        await EmpresaModel.findOneAndUpdate({_id:trabajador.empresa}, {$push: {trabajadores: trabajador._id}}); //Añadimos al trabajador a la lista de trabajadores de la empresa
-        throw new Error("HOLA");
-    }
-});
-
 
 //Middleware hook, si el trabajador se borra, las tareas se borran y se borra de la lista de trabajadores asociados a la empresa
 trabajadorSchema.post("findOneAndDelete", async function (trabajador:TrabajadorModelType) {

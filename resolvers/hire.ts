@@ -30,8 +30,8 @@ export const hire = async(req:Request<{id:string, workerId:string}>, res:Respons
             return;
         }
 
-        //Actualizamos el trabajador y su situacion
-        await TrabajadorModel.findOneAndUpdate({ _id: trabajador._id }, { empresa: empresa._id }).exec();
+        //Quitamos el trabajador de la empresa
+        await EmpresaModel.findOneAndUpdate({_id:id}, {$push: {trabajadores: workerId}}).exec();
 
         res.status(200).send("Trabajador contratado correctamente"); 
     }catch(error){
