@@ -10,6 +10,8 @@ export const postEmpresa = async(req:Request<EmpresaModelType>, res:Response<str
 
         const empresa = new EmpresaModel({nombre, tipo});
 
+        //No hace falta comprobar ya que comprobamos desde el modelo
+
         await empresa.save();
 
         res.status(201).send("Empresa creada correctamente");

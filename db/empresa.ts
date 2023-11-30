@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 const empresaSchema = new Schema ({
     nombre: {type: String, required: true},
     tipo: {type: String, required: true, enum: Object.values(Entidad)}, //enum para que solo se puedan meter los valores del enum
-    trabajadores: {type: Schema.Types.ObjectId, required:false, ref:"Trabajador"}
+    trabajadores: {type: Schema.Types.ObjectId, required:false, ref:"Trabajador", default: null} //Empieza sin trabajadores
 })
 
 //Validate del tipo de empresa
