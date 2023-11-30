@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Empresa, Entidad } from "../types.ts";
 import { TrabajadorModel } from "./trabajador.ts";
+import { TareaModel } from "./tarea.ts";
 
 const Schema = mongoose.Schema;
 
@@ -27,10 +28,11 @@ empresaSchema.path("trabajadores").validate(function (trabajadores:Array<mongoos
 empresaSchema.post("findOneAndDelete", async function (empresa:EmpresaModelType) {
     if(empresa && empresa.trabajadores){ //si la empresa existe y tiene trabajadores
         try {
-            await TrabajadorModel.updateMany(
+            await TrabajadorModel.updateMany( 
                 { _id: { $in: empresa.trabajadores } },
                 { $set: { empresa: null }, $pull: { tareas: { $exists: true } } }
             );
+            await TareaModel.deleteMany({ empresa: empresa._id });
         } catch (error) {
             console.error("Error al actualizar trabajadores:", error);
         }

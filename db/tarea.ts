@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Tarea, Estado} from "../types.ts";
 import { TrabajadorModel, TrabajadorModelType } from "./trabajador.ts";
-import { EmpresaModel, EmpresaModelType } from "./empresa.ts";
+import { EmpresaModelType } from "./empresa.ts";
 
 const Schema = mongoose.Schema;
 
