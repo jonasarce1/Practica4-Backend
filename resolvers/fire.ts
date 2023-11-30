@@ -5,8 +5,6 @@ import mongoose from "mongoose";
 import { EmpresaModel, EmpresaModelType } from "../db/empresa.ts";
 import { TrabajadorModel } from "../db/trabajador.ts";
 
-// endpoint sera /business/:id/fire/:workerId y esto hara que una empresa despida a un trabajador
-
 export const fire = async(req:Request<{id:string, workerId:string}>, res:Response<EmpresaModelType | {error : unknown}>) => {
     try{
         const id = req.params.id;
@@ -28,7 +26,7 @@ export const fire = async(req:Request<{id:string, workerId:string}>, res:Respons
 
         //Las comprobaciones se hacen en el modelo
 
-        TrabajadorModel.findOneAndUpdate({_id:workerId}, {empresa:null}).exec(); //Actualizamos el trabajador
+        await TrabajadorModel.findOneAndUpdate({_id:workerId}, {empresa:null}).exec(); //Actualizamos el trabajador
 
         res.status(200).send(await EmpresaModel.findById(id).populate("trabajadores").exec()); //Devolvemos la empresa actualizada
     }catch(error){

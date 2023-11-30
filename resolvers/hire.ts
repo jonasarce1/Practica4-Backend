@@ -26,7 +26,7 @@ export const hire = async(req:Request<{id:string, workerId:string}>, res:Respons
 
         //Las comprobaciones se hacen en el modelo
 
-        TrabajadorModel.findOneAndUpdate({_id:workerId}, {empresa:id}).exec(); //Actualizamos el trabajador
+        await TrabajadorModel.findOneAndUpdate({_id:workerId}, {empresa:id}).exec(); //Actualizamos el trabajador
 
         res.status(200).send(await EmpresaModel.findById(id).populate("trabajadores").exec()); //Devolvemos la empresa actualizada
     }catch(error){
