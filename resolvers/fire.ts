@@ -24,9 +24,14 @@ export const fire = async(req:Request<{id:string, workerId:string}>, res:Respons
             return;
         }
 
-        //Las comprobaciones se hacen en el modelo
+        //Si el trabajador esta despedido no puede ser despedido de nuevo
+        if(trabajador.empresa === null){
+            res.status(400).send("El trabajador ya esta despedido");
+            return;
+        }
 
-        await TrabajadorModel.findOneAndUpdate({_id:workerId}, {empresa:null}).exec(); //Actualizamos el trabajador
+        //Actualizamos el trabajador y su situacion
+        await TrabajadorModel.findOneAndUpdate({_id:workerId}, {empresa:null}, {new:true}).exec();
 
         res.status(200).send("Trabajador despedido correctamente");
     }catch(error){

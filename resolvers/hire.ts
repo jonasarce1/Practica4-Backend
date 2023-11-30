@@ -24,9 +24,14 @@ export const hire = async(req:Request<{id:string, workerId:string}>, res:Respons
             return;
         }
 
-        //Las comprobaciones se hacen en el modelo
+        //Si el trabajador esta contratado no puede ser contratado de nuevo
+        if(trabajador.empresa !== null){
+            res.status(400).send("El trabajador ya esta contratado");
+            return;
+        }
 
-        await TrabajadorModel.findOneAndUpdate({_id:workerId}, {empresa:id}).exec(); //Actualizamos el trabajador
+        //Actualizamos el trabajador y su situacion
+        await TrabajadorModel.findOneAndUpdate({ _id: workerId }, { empresa: id }).exec();
 
         res.status(200).send("Trabajador contratado correctamente"); 
     }catch(error){

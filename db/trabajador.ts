@@ -36,51 +36,13 @@ trabajadorSchema.path("tareas").validate(function (tareas:Array<mongoose.Schema.
     }
 })
 
-/*//Middleware hook para update (hire y fire)
-trabajadorSchema.post("findOneAndUpdate", async function (trabajador:TrabajadorModelType) {
-    //Si el trabajador es despedido (endpoint de fire) se queda sin empresa, se quita de la lista de trabajadores de la empresa, y se borran todas sus tareas
-    if(!trabajador.empresa){
-        await EmpresaModel.findByIdAndUpdate(trabajador.empresa, {$pull: {trabajadores: trabajador._id}});
-        await TrabajadorModel.findByIdAndUpdate(trabajador._id, {$pull: {tareas: trabajador._id}});
-        await TareaModel.deleteMany({trabajador: trabajador._id});
-    }
-    //Si le han contratado (endpoint de hire) se anyade a la lista de trabajadores de la empresa
-    if(trabajador.empresa){
-        //Si la empresa ya tiene a un trbajador con ese id no se anyade
-        const empresa = await EmpresaModel.findById(trabajador.empresa);
-        if(empresa){
-            if(empresa.trabajadores){
-                if(empresa.trabajadores.includes(trabajador._id)){
-                    return;
-                }
-            }
-        }
-        
-        await EmpresaModel.findByIdAndUpdate(trabajador.empresa, {$push: {trabajadores: trabajador._id}});
-    }
-})*/
-
-//Middleware hook para hire
+//Middleware hook para hire y fire
 trabajadorSchema.post("findOneAndUpdate", async function (trabajador: TrabajadorModelType) {
-    //Si el trabajador ha sido contratado
-    if (trabajador.empresa && trabajador.isNew) {
-        const empresa = await EmpresaModel.findById(trabajador.empresa);
-        
-        if (empresa) {
-            //Si la empresa no tiene al trabajador en su lista de trabajadores, se anyade
-            if (!empresa.trabajadores || !empresa.trabajadores.includes(trabajador._id)) {
-                await EmpresaModel.findByIdAndUpdate(trabajador.empresa, { $push: { trabajadores: trabajador._id } });
-            }
-        }
-    }
-});
-
-//Middleware hook para fire
-trabajadorSchema.post("findOneAndUpdate", async function (trabajador: TrabajadorModelType) {
-    //Si el trabajador ha sido despedido
-    if (!trabajador.empresa && !trabajador.isNew) {
-        await EmpresaModel.findByIdAndUpdate(trabajador.empresa, { $pull: { trabajadores: trabajador._id } });
-        await TareaModel.deleteMany({ trabajador: trabajador._id });
+    if(trabajador.empresa === null){ //Si el trabajador esta despedido
+        await TareaModel.deleteMany({trabajador: trabajador._id}); //Borramos todas sus tareas
+        await EmpresaModel.findOneAndUpdate({_id:trabajador.empresa}, {$pull: {trabajadores: trabajador._id}}); //Borramos al trabajador de la lista de trabajadores de la empresa
+    }else{ //Si el trabajador esta contratado
+        await EmpresaModel.findOneAndUpdate({_id:trabajador.empresa}, {$addToSet: {trabajadores: trabajador._id}}); //Añadimos al trabajador a la lista de trabajadores de la empresa
     }
 });
 
