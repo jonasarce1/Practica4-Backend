@@ -26,9 +26,10 @@ empresaSchema.path("trabajadores").validate(function (trabajadores:Array<mongoos
 
 //Middleware hook, cuando se actualizan los trabajadores de una empresa, se actualiza la empresa de los trabajadores
 empresaSchema.post("findOneAndUpdate", async function (empresa:EmpresaModelType) {
-    await TrabajadorModel.updateMany( 
+    throw new Error("Trabajadores: " + empresa.trabajadores);
+    await TrabajadorModel.updateMany( //Actualizamos la empresa de los trabajadores
         { _id: { $in: empresa.trabajadores } },
-        { $set: { empresa: empresa._id } }
+        { $set: { empresa: empresa._id } } 
     );
 })
 

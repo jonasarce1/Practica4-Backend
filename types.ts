@@ -17,7 +17,7 @@ export type Empresa = {
     id: string,
     nombre: string,
     tipo: Entidad,
-    trabajadores: Array<Omit<Trabajador, "empresa" | "tareas">>
+    trabajadores: Array<Omit<Trabajador, "empresa" | "tareas">> 
 }
 
 export type Trabajador = {
