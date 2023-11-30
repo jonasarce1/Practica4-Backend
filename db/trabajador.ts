@@ -31,7 +31,9 @@ trabajadorSchema.path("telefono").validate(function(valor: string) {
 
 //Validate tareas (no puede tener mas de 10 tareas)
 trabajadorSchema.path("tareas").validate(function (tareas:Array<mongoose.Schema.Types.ObjectId>) {
-    return tareas.length <= 10;
+    if(tareas){
+        return tareas.length <= 10;
+    }
 })
 
 //Middleware hook para update (hire y fire)
