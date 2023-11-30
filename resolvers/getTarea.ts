@@ -8,7 +8,10 @@ export const getTarea = async(req:Request<{id:string}>, res:Response<TareaModelT
     try{
         const id = req.params.id;
 
-        const tarea = await TareaModel.findById(id).populate("empresa").populate("trabajador").exec(); //Populate para que se vea la empresa y el trabajador
+        const tarea = await TareaModel.findById(id)
+        .populate({path: "empresa", select: "nombre tipo"}) //Populate para que se vea la empresa y el trabajador
+        .populate({path: "trabajador", select: "nombre email dni telefono"})
+        .exec(); 
 
         if(!tarea){
             res.status(404).send("No se pudo encontrar la tarea");

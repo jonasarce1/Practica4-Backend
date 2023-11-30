@@ -28,7 +28,7 @@ export const fire = async(req:Request<{id:string, workerId:string}>, res:Respons
 
         await TrabajadorModel.findOneAndUpdate({_id:workerId}, {empresa:null}).exec(); //Actualizamos el trabajador
 
-        res.status(200).send(await EmpresaModel.findById(id).populate("trabajadores").exec()); //Devolvemos la empresa actualizada
+        res.status(200).send("Trabajador despedido correctamente");
     }catch(error){
         if(error instanceof mongoose.Error.ValidationError){ //si el error es del modelo de mongoose
             res.status(400).send(error); 

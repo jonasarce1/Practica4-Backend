@@ -8,7 +8,10 @@ export const getTrabajador = async(req:Request<{id:string}>, res:Response<Trabaj
     try{
         const id = req.params.id;
 
-        const trabajador = await TrabajadorModel.findById(id).populate("empresa").populate("tareas").exec(); //Populate para que se vea la empresa y las tareas
+        const trabajador = await TrabajadorModel.findById(id)
+        .populate({path: "empresa", select: "nombre tipo"}) //Populate para que se vea la empresa y las tareas con los campos que queremos
+        .populate({path: "tareas", select: "nombre estado"})
+        .exec(); 
 
         if(!trabajador){
             res.status(404).send("No se pudo encontrar el trabajador");

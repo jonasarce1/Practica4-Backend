@@ -8,8 +8,10 @@ export const getEmpresa = async(req:Request<{id:string}>, res:Response<EmpresaMo
     try{
         const id = req.params.id;
 
-        const empresa = await EmpresaModel.findById(id).populate("trabajadores").exec(); //Populate para que se vean los trabajadores
-
+        const empresa = await EmpresaModel.findById(id)
+        .populate({path: "trabajadores", select: "nombre email dni telefono"}) //Populate para que se vean los trabajadores
+        .exec(); 
+        
         if(!empresa){
             res.status(404).send("No se pudo encontrar la empresa");
             return;

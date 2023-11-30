@@ -2,10 +2,10 @@
 import {Request, Response} from "express";
 import mongoose from "mongoose";
 
-import { EmpresaModel, EmpresaModelType } from "../db/empresa.ts";
+import { EmpresaModel } from "../db/empresa.ts";
 import { TrabajadorModel } from "../db/trabajador.ts";
 
-export const hire = async(req:Request<{id:string, workerId:string}>, res:Response<EmpresaModelType | {error : unknown}>) => {
+export const hire = async(req:Request<{id:string, workerId:string}>, res:Response<string | {error : unknown}>) => {
     try{
         const id = req.params.id;
         const workerId = req.params.workerId;
@@ -28,7 +28,7 @@ export const hire = async(req:Request<{id:string, workerId:string}>, res:Respons
 
         await TrabajadorModel.findOneAndUpdate({_id:workerId}, {empresa:id}).exec(); //Actualizamos el trabajador
 
-        res.status(200).send(await EmpresaModel.findById(id).populate("trabajadores").exec()); //Devolvemos la empresa actualizada
+        res.status(200).send("Trabajador contratado correctamente"); 
     }catch(error){
         if(error instanceof mongoose.Error.ValidationError){ //si el error es del modelo de mongoose
             res.status(400).send(error); 
