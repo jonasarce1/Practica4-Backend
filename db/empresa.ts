@@ -20,9 +20,10 @@ empresaSchema.path("trabajadores").validate(function (trabajadores:Array<mongoos
     return trabajadores.length <= 10;
 })
 
-//Middleware hook si la empresa se borra se borran todos los trabajadores
+//Middleware hook si la empresa se borra se despiden a todos los trabajadores y se les borran todas las tareas
 empresaSchema.post("findOneAndDelete", async function (empresa:EmpresaModelType) {
-    await TrabajadorModel.deleteMany({empresa: empresa._id});
+    await TrabajadorModel.updateMany({empresa: empresa._id}, {$set: {empresa: null}});
+    await TrabajadorModel.updateMany({empresa: empresa._id}, {$pull: {tareas: {$exists: true}}}); //exists es para que solo se borren las tareas que existan
 })
 
 //Exports
