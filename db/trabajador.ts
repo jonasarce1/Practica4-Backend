@@ -11,7 +11,7 @@ const trabajadorSchema = new Schema({
     dni:{type: String, required: true, unique: true},
     telefono:{type: String, required: true, unique: true},
     empresa:{type: Schema.Types.ObjectId, required: false, ref: "Empresa", default: null}, //Empieza sin empresa
-    tareas:[{type: Schema.Types.ObjectId, required: false, ref: "Tarea", default: null, unique:true}] //Empieza sin tareas
+    tareas:[{type: Schema.Types.ObjectId, required: false, ref: "Tarea", default: null}] //Empieza sin tareas
 })
 
 //Validate email
@@ -42,7 +42,7 @@ trabajadorSchema.post("findOneAndUpdate", async function (trabajador: Trabajador
         await TareaModel.deleteMany({trabajador: trabajador._id}); //Borramos todas sus tareas
         await EmpresaModel.findOneAndUpdate({_id:trabajador.empresa}, {$pull: {trabajadores: trabajador._id}}); //Borramos al trabajador de la lista de trabajadores de la empresa
     }else{ //Si el trabajador esta contratado
-        await EmpresaModel.findOneAndUpdate({_id:trabajador.empresa}, {$addToSet: {trabajadores: trabajador._id}}); //Añadimos al trabajador a la lista de trabajadores de la empresa
+        await EmpresaModel.findOneAndUpdate({_id:trabajador.empresa}, {$push: {trabajadores: trabajador._id}}); //Añadimos al trabajador a la lista de trabajadores de la empresa
     }
 });
 
