@@ -41,6 +41,7 @@ trabajadorSchema.post("findOneAndUpdate", async function (trabajador: Trabajador
     if(trabajador.empresa === null){ //Si el trabajador esta despedido
         await TareaModel.deleteMany({trabajador: trabajador._id}); //Borramos todas sus tareas
         await EmpresaModel.findOneAndUpdate({_id:trabajador.empresa}, {$pull: {trabajadores: trabajador._id}}); //Borramos al trabajador de la lista de trabajadores de la empresa
+        throw new Error("ADIOS");
     }else{ //Si el trabajador esta contratado
         await EmpresaModel.findOneAndUpdate({_id:trabajador.empresa}, {$push: {trabajadores: trabajador._id}}); //Añadimos al trabajador a la lista de trabajadores de la empresa
         throw new Error("HOLA");
