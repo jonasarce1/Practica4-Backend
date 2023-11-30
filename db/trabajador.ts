@@ -60,7 +60,7 @@ trabajadorSchema.post("findOneAndUpdate", async function (trabajador:TrabajadorM
     }
 })
 
-//Middleware hook si el trabajador se borra, las tareas se borran y se borra de la lista de trabajadores asociados a la empresa
+//Middleware hook, si el trabajador se borra, las tareas se borran y se borra de la lista de trabajadores asociados a la empresa
 trabajadorSchema.post("findOneAndDelete", async function (trabajador:TrabajadorModelType) {
     await TareaModel.deleteMany({trabajador: trabajador._id});
 })

@@ -43,14 +43,19 @@ tareaSchema.path("trabajador").validate(function (trabajador:TrabajadorModelType
     return true;
 })
 
-//Middleware hook estado closed (si el estado de la tarea es closed, esta se borra)
+//Middleware hook, al crear una tarea se anyade a la lista de tareas del trabajador
+tareaSchema.post("save", async function (tarea:TareaModelType) {
+    await TrabajadorModel.findByIdAndUpdate(tarea.trabajador, {$push: {tareas: tarea._id}});
+})
+
+//Middleware hook, estado closed (si el estado de la tarea es closed, esta se borra)
 tareaSchema.post("findOneAndUpdate", async function (tarea:TareaModelType) {
     if(tarea.estado === Estado.Closed){
         await TareaModel.findByIdAndDelete(tarea._id);
     }
 })
 
-//Middleware hook si la tarea se borra, se borra de la lista de tareas asociadas a los trabajadores
+//Middleware hook, si la tarea se borra, se borra de la lista de tareas asociadas a los trabajadores
 tareaSchema.post("findOneAndDelete", async function (tarea:TareaModelType) {
     await TrabajadorModel.updateMany({tareas: tarea._id}, {$pull: {tareas: tarea._id}});
 })
