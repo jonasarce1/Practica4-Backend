@@ -29,10 +29,7 @@ empresaSchema.post("findOneAndUpdate", async function (doc: EmpresaModelType) {
     const empresa = await EmpresaModel.findById(doc._id).exec(); // Accede a la empresa actualizada
 
     if (empresa && empresa.trabajadores) {
-        await TrabajadorModel.updateMany(
-            { _id: { $in: empresa.trabajadores } },
-            { $set: { empresa: empresa._id } }
-        );
+        await TrabajadorModel.updateMany({_id:{$in: empresa.trabajadores}}, {$set:{empresa: empresa._id}});
     }
 });
 
@@ -40,10 +37,7 @@ empresaSchema.post("findOneAndUpdate", async function (doc: EmpresaModelType) {
 empresaSchema.post("findOneAndDelete", async function (empresa:EmpresaModelType) {
     if(empresa && empresa.trabajadores){ //si la empresa existe y tiene trabajadores
         try {
-            await TrabajadorModel.updateMany( 
-                { _id: { $in: empresa.trabajadores } },
-                { $set: { empresa: null }, $pull: { tareas: { $exists: true } } }
-            );
+            await TrabajadorModel.updateMany({_id:{$in: empresa.trabajadores}}, {$set:{empresa: null}, $pull:{tareas: {$exists: true}}});
             await TareaModel.deleteMany({ empresa: empresa._id });
         } catch (error) {
             console.error("Error al actualizar trabajadores:", error);

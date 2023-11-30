@@ -30,7 +30,7 @@ export const fire = async(req:Request<{id:string, workerId:string}>, res:Respons
             return;
         }
 
-        //Anyadimos el trabajador a la empresa
+        //Aqui actualizo el trabajador en vez de la empresa para evitar conflictos en el middleware hook de hire
         await TrabajadorModel.findOneAndUpdate({_id:workerId}, {$set: {empresa: null}}).exec();
 
         res.status(200).send("Trabajador despedido correctamente");
