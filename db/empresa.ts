@@ -25,13 +25,18 @@ empresaSchema.path("trabajadores").validate(function (trabajadores:Array<mongoos
 })
 
 //Middleware hook, cuando se actualizan los trabajadores de una empresa, se actualiza la empresa de los trabajadores
-empresaSchema.post("findOneAndUpdate", async function (empresa:EmpresaModelType) {
-    throw new Error("Trabajadores: " + empresa.trabajadores);
-    await TrabajadorModel.updateMany( //Actualizamos la empresa de los trabajadores
-        { _id: { $in: empresa.trabajadores } },
-        { $set: { empresa: empresa._id } } 
-    );
-})
+empresaSchema.post("findOneAndUpdate", async function (doc: EmpresaModelType) {
+    const empresa = await EmpresaModel.findById(doc._id).exec(); // Accede a la empresa actualizada
+
+    if (empresa && empresa.trabajadores) {
+        await TrabajadorModel.updateMany(
+            { _id: { $in: empresa.trabajadores } },
+            { $set: { empresa: empresa._id } }
+        );
+    }else{
+        throw new Error("No se pudo actualizar la empresa");
+        }
+});
 
 //Middleware hook, si la empresa se borra se despiden a todos los trabajadores y se les borran todas las tareas
 empresaSchema.post("findOneAndDelete", async function (empresa:EmpresaModelType) {
