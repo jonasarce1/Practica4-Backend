@@ -15,7 +15,7 @@ export const postEmpresa = async(req:Request<EmpresaModelType>, res:Response<str
         res.status(201).send("Empresa creada correctamente");
     }catch(error){
         if(error instanceof mongoose.Error.ValidationError){ //si el error es del modelo de mongoose
-            res.status(400).send(error.errors.message); 
+            res.status(400).send(error); //Manda todo el error de validacion
         }else{
             res.status(500).send(error.message);
         }

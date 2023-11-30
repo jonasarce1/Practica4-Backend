@@ -11,7 +11,7 @@ export const getEmpresas = async(_req:Request, res:Response<Array<EmpresaModelTy
         res.status(200).send(empresas);
     }catch(error){
         if(error instanceof mongoose.Error.ValidationError){ //si el error es del modelo de mongoose
-            res.status(400).send(error.errors.message); //Asi para mandar solo el texto del error de mongoose
+            res.status(400).send(error); //Asi para mandar solo el texto del error de mongoose
         }else{
             res.status(500).send(error.message);
         } 

@@ -18,7 +18,7 @@ export const getEmpresa = async(req:Request<{id:string}>, res:Response<EmpresaMo
         res.status(200).send(empresa.populate("trabajadores")); //Populate para que se vean los trabajadores
     }catch(error){
         if(error instanceof mongoose.Error.ValidationError){ //si el error es del modelo de mongoose
-            res.status(400).send(error.errors.message); 
+            res.status(400).send(error); 
         }else{
             res.status(500).send(error.message);
         }
