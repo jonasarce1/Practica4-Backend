@@ -11,7 +11,7 @@ const trabajadorSchema = new Schema({
     dni:{type: String, required: true, unique: true},
     telefono:{type: String, required: true, unique: true},
     empresa:{type: Schema.Types.ObjectId, required: false, ref: "Empresa", default: null}, //Empieza sin empresa
-    tareas:{type: Schema.Types.ObjectId, required: false, ref: "Tarea", default: null} //Empieza sin tareas
+    tareas:[{type: Schema.Types.ObjectId, required: false, ref: "Tarea", default: null, unique:true}] //Empieza sin tareas
 })
 
 //Validate email
