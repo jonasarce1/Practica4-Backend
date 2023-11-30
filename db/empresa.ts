@@ -24,7 +24,7 @@ empresaSchema.path("trabajadores").validate(function (trabajadores:Array<mongoos
     return true;
 })
 
-//Middleware hook, cuando se actualizan los trabajadores de una empresa, se actualiza la empresa de los trabajadores
+//Middleware hook para hire, cuando se actualizan los trabajadores de una empresa, se actualiza la empresa de los trabajadores
 empresaSchema.post("findOneAndUpdate", async function (doc: EmpresaModelType) {
     const empresa = await EmpresaModel.findById(doc._id).exec(); // Accede a la empresa actualizada
 
@@ -33,9 +33,7 @@ empresaSchema.post("findOneAndUpdate", async function (doc: EmpresaModelType) {
             { _id: { $in: empresa.trabajadores } },
             { $set: { empresa: empresa._id } }
         );
-    }else{
-        throw new Error("No se pudo actualizar la empresa");
-        }
+    }
 });
 
 //Middleware hook, si la empresa se borra se despiden a todos los trabajadores y se les borran todas las tareas

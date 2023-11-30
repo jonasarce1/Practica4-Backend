@@ -31,7 +31,7 @@ export const fire = async(req:Request<{id:string, workerId:string}>, res:Respons
         }
 
         //Anyadimos el trabajador a la empresa
-        await EmpresaModel.findOneAndUpdate({_id:id}, {$pull: {trabajadores: workerId}}).exec();
+        await TrabajadorModel.findOneAndUpdate({_id:workerId}, {$set: {empresa: null}}).exec();
 
         res.status(200).send("Trabajador despedido correctamente");
     }catch(error){

@@ -35,6 +35,15 @@ trabajadorSchema.path("tareas").validate(function (tareas:Array<mongoose.Schema.
     }
 })
 
+//Middleware hook para fire, cuando el trabajador no tiene empresa, se borran todas sus tareas
+trabajadorSchema.post("findOneAndUpdate", async function (doc: TrabajadorModelType) {
+    const trabajador = await TrabajadorModel.findById(doc._id).exec(); //Accede al trabajador actualizado
+
+    if (trabajador && !trabajador.empresa) {
+        await TareaModel.deleteMany({ trabajador: trabajador._id });
+    }
+});
+
 //Middleware hook, si el trabajador se borra, las tareas se borran y se borra de la lista de trabajadores asociados a la empresa
 trabajadorSchema.post("findOneAndDelete", async function (trabajador:TrabajadorModelType) {
     await TareaModel.deleteMany({trabajador: trabajador._id});
