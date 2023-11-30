@@ -46,7 +46,16 @@ trabajadorSchema.post("findOneAndUpdate", async function (trabajador:TrabajadorM
     }
     //Si le han contratado (endpoint de hire) se anyade a la lista de trabajadores de la empresa
     if(trabajador.empresa){
-        console.log("hola");
+        //Si la empresa ya tiene a un trbajador con ese id no se anyade
+        const empresa = await EmpresaModel.findById(trabajador.empresa);
+        if(empresa){
+            if(empresa.trabajadores){
+                if(empresa.trabajadores.includes(trabajador._id)){
+                    return;
+                }
+            }
+        }
+        
         await EmpresaModel.findByIdAndUpdate(trabajador.empresa, {$push: {trabajadores: trabajador._id}});
     }
 })
