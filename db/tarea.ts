@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Tarea, Estado} from "../types.ts";
-import { TrabajadorModel } from "./trabajador.ts";
+import { TrabajadorModel, TrabajadorModelType } from "./trabajador.ts";
+import { EmpresaModelType } from "./empresa.ts";
 
 const Schema = mongoose.Schema;
 
@@ -13,7 +14,29 @@ const tareaSchema = new Schema({
 
 //Validate estado
 tareaSchema.path("estado").validate(function(valor: Estado){
+    //Si el estado es closed, se borra la tarea (aunque esto es en el caso de que se cree una tarea con el estado closed, que no deberia pasar)
+    if(valor === Estado.Closed){
+        TareaModel.findByIdAndDelete(this._id);
+        return false;
+    }
     return Object.values(Estado).includes(valor);
+})
+
+//Validate empresa y trabajador, si la empresa y el trabajador no coinciden, no se crea la tarea
+tareaSchema.path("empresa").validate(async function (valor: EmpresaModelType) {
+    const trabajador = await TrabajadorModel.findById(this.trabajador);
+    if(trabajador){
+        return trabajador.empresa === valor._id;
+    }
+    return false;
+})
+
+//Validate numero de tareas (no puede haber mas de 10 tareas)
+tareaSchema.path("trabajador").validate(function (trabajador:TrabajadorModelType) {
+    if(trabajador.tareas){ //Si tiene tareas el trabajador (para no dar error en caso de que no tenga tareas)
+        return trabajador.tareas.length <= 10;
+    }
+    return true;
 })
 
 //Middleware hook estado closed (si el estado de la tarea es closed, esta se borra)
