@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 
 const tareaSchema = new Schema({
     nombre:{type: String, required: true},
-    estado:{type: Estado, required: true},
+    estado:{type: String, required: true, enum: Object.values(Estado)}, //enum para que solo se puedan meter los valores del enum
     empresa:{type: Schema.Types.ObjectId, required: true, ref: "Empresa"},
     trabajador:{type: Schema.Types.ObjectId, required: true, ref: "Trabajador"}
 })

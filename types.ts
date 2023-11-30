@@ -1,16 +1,16 @@
 export enum Estado {
-    ToDo,
-    InProgress,
-    InTest,
-    Closed
+    ToDo = "ToDo", //Ha de ser asi ya que lo que se ejecuta es js (no tipado) y mongoose no puede poner tipo Enum
+    InProgress = "InProgress",
+    InTest = "InTest",
+    Closed = "Closed"
 }
 
 export enum Entidad {
-    SA,
-    SL,
-    SLL,
-    SLU,
-    SC
+    SA = "SA",
+    SL = "SL",
+    SLL = "SLL",
+    SLU = "SLU",
+    SC = "SC"
 }
 
 export type Empresa = {
