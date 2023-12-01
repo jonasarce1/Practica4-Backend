@@ -23,17 +23,17 @@ tareaSchema.path("estado").validate(function(valor: Estado){
 })
 
 //Validate empresa y trabajador, si la empresa y el trabajador no coinciden, no se crea la tarea
-tareaSchema.path("empresa").validate(async function (valor: EmpresaModelType) {
+tareaSchema.path("empresa").validate(async function (empresa: EmpresaModelType) {
     const trabajador = await TrabajadorModel.findById(this.trabajador);
     if(trabajador){
         if(trabajador.empresa){
-            if(trabajador.empresa.toString() !== valor._id.toString()){
+            if(trabajador.empresa.toString() !== empresa._id.toString()){
                 return false;
             }
         }
     }
     return true;
-})
+}, "La empresa y el trabajador no coinciden")
 
 //Validate numero de tareas (no puede haber mas de 10 tareas)
 tareaSchema.path("trabajador").validate(function (trabajador:TrabajadorModelType) {
@@ -60,7 +60,7 @@ tareaSchema.post("save", async function (tarea:TareaModelType) {
             throw new Error("La empresa y el trabajador no estan asociados");
         }
     }
-    
+
     await TrabajadorModel.findByIdAndUpdate(tarea.trabajador, {$push: {tareas: tarea._id}});
 })
 
