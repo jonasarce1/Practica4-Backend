@@ -45,6 +45,12 @@ tareaSchema.path("trabajador").validate(function (trabajador:TrabajadorModelType
 
 //Middleware hook, al crear una tarea se anyade a la lista de tareas del trabajador
 tareaSchema.post("save", async function (tarea:TareaModelType) {
+    if(!tarea.empresa){
+        throw new Error("La tarea ha de tener empresa");
+    }
+    if(!tarea.trabajador){
+        throw new Error("La tarea ha de tener trabajador asociado");
+    }
     await TrabajadorModel.findByIdAndUpdate(tarea.trabajador, {$push: {tareas: tarea._id}});
 })
 
