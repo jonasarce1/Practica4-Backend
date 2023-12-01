@@ -26,15 +26,12 @@ tareaSchema.path("estado").validate(function(valor: Estado){
 tareaSchema.path("empresa").validate(async function (empresa: EmpresaModelType) {
     console.log("Path empresa");
     const trabajador = await TrabajadorModel.findById(this.trabajador);
-    if(trabajador){
-        if(trabajador.empresa){
-            if(trabajador.empresa.toString() !== empresa._id.toString()){
-                console.log("Excepcion en la validacion de empresa y trabajador")
-                throw new Error("La empresa y el trabajador no coinciden");
-            }
+    if(empresa && trabajador){
+        if(empresa._id.toString() === trabajador.empresa.toString()){
+            return true;
         }
     }
-    return true;
+    throw new Error("La empresa y el trabajador no coinciden");
 }, "La empresa y el trabajador no coinciden")
 
 //Validate numero de tareas (no puede haber mas de 10 tareas)
