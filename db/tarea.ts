@@ -51,6 +51,16 @@ tareaSchema.post("save", async function (tarea:TareaModelType) {
     if(!tarea.trabajador){
         throw new Error("La tarea ha de tener trabajador asociado");
     }
+    const empresa = await TareaModel.findById(tarea.empresa).exec();
+    const trabajador = await TrabajadorModel.findById(tarea.trabajador).exec();
+
+    //Comprobar que empresa y trabajador estan asociados entre ellos, si no hay asociacion se lanza excepcion
+    if(empresa && trabajador){
+        if(empresa._id.toString() !== trabajador.empresa.toString()){
+            throw new Error("La empresa y el trabajador no estan asociados");
+        }
+    }
+    
     await TrabajadorModel.findByIdAndUpdate(tarea.trabajador, {$push: {tareas: tarea._id}});
 })
 
