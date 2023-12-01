@@ -31,7 +31,8 @@ tareaSchema.path("empresa").validate(async function (empresa: EmpresaModelType) 
             return true;
         }
     }
-    throw new Error("La empresa y el trabajador no coinciden");
+    //lanzamos error de validacion
+    throw new mongoose.Error.ValidationError(this.empresa);
 }, "La empresa y el trabajador no coinciden")
 
 //Validate numero de tareas (no puede haber mas de 10 tareas)
@@ -44,19 +45,6 @@ tareaSchema.path("trabajador").validate(function (trabajador:TrabajadorModelType
 
 //Middleware hook, al crear una tarea se anyade a la lista de tareas del trabajador
 tareaSchema.post("save", async function (tarea:TareaModelType) {
-    console.log("Middleware hook tarea");
-
-    const empresa = await TareaModel.findById(tarea.empresa).exec();
-    const trabajador = await TrabajadorModel.findById(tarea.trabajador).exec();
-
-    //Comprobar que empresa y trabajador estan asociados entre ellos, si no hay asociacion se lanza excepcion
-    if(empresa && trabajador){
-        if(empresa._id.toString() !== trabajador.empresa.toString()){
-            console.log("Excepcion en el middleware hook de tarea")
-            throw new Error("La empresa y el trabajador no estan asociados");
-        }
-    }
-
     await TrabajadorModel.findByIdAndUpdate(tarea.trabajador, {$push: {tareas: tarea._id}});
 })
 
