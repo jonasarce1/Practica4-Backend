@@ -28,7 +28,7 @@ tareaSchema.path("empresa").validate(async function (empresa: EmpresaModelType) 
     if(trabajador){
         if(trabajador.empresa){
             if(trabajador.empresa.toString() !== empresa._id.toString()){
-                return false;
+                throw new Error("La empresa y el trabajador no coinciden");
             }
         }
     }
