@@ -24,10 +24,12 @@ tareaSchema.path("estado").validate(function(valor: Estado){
 
 //Validate empresa y trabajador, si la empresa y el trabajador no coinciden, no se crea la tarea
 tareaSchema.path("empresa").validate(async function (empresa: EmpresaModelType) {
+    console.log("Path empresa");
     const trabajador = await TrabajadorModel.findById(this.trabajador);
     if(trabajador){
         if(trabajador.empresa){
             if(trabajador.empresa.toString() !== empresa._id.toString()){
+                console.log("Excepcion en la validacion de empresa y trabajador")
                 throw new Error("La empresa y el trabajador no coinciden");
             }
         }
@@ -45,18 +47,15 @@ tareaSchema.path("trabajador").validate(function (trabajador:TrabajadorModelType
 
 //Middleware hook, al crear una tarea se anyade a la lista de tareas del trabajador
 tareaSchema.post("save", async function (tarea:TareaModelType) {
-    if(!tarea.empresa){
-        throw new Error("La tarea ha de tener empresa");
-    }
-    if(!tarea.trabajador){
-        throw new Error("La tarea ha de tener trabajador asociado");
-    }
+    console.log("Middleware hook tarea");
+
     const empresa = await TareaModel.findById(tarea.empresa).exec();
     const trabajador = await TrabajadorModel.findById(tarea.trabajador).exec();
 
     //Comprobar que empresa y trabajador estan asociados entre ellos, si no hay asociacion se lanza excepcion
     if(empresa && trabajador){
         if(empresa._id.toString() !== trabajador.empresa.toString()){
+            console.log("Excepcion en el middleware hook de tarea")
             throw new Error("La empresa y el trabajador no estan asociados");
         }
     }
