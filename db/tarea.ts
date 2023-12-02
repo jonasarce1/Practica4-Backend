@@ -1,4 +1,4 @@
-import mongoose, {Query} from "mongoose";
+import mongoose from "mongoose";
 import { Tarea, Estado} from "../types.ts";
 import { TrabajadorModel } from "./trabajador.ts";
 import { EmpresaModelType } from "./empresa.ts";
