@@ -18,6 +18,7 @@ import { deleteTarea } from "./resolvers/deleteTarea.ts";
 
 import { hire } from "./resolvers/hire.ts";
 import { fire } from "./resolvers/fire.ts";
+import { changeStatus } from "./resolvers/changeStatus.ts";
 
 const MONGO_URL = Deno.env.get("MONGO_URL");
 
@@ -65,6 +66,8 @@ app.put("/business/:id/hire/:workerId", hire); //Contrata a un trabajador segun 
 
 app.put("/business/:id/fire/:workerId", fire); //Despide a un trabajador segun su id y el id de la empresa
 
+app.put("/task/:id", changeStatus); //Cambia el estado de una tarea segun su id y el estado (como query param)
+//Ejemplo postman: http://localhost:3000/task/656b37e4ceda926e36fa569d?status=InProgress
 
 
 app.listen(3000, () => { console.log("Funcionando en puerto 3000") });

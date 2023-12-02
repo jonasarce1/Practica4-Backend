@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, {Query} from "mongoose";
 import { Tarea, Estado} from "../types.ts";
 import { TrabajadorModel } from "./trabajador.ts";
 import { EmpresaModelType } from "./empresa.ts";
@@ -21,8 +21,7 @@ tareaSchema.path("nombre").validate(function (nombre:string) {
 tareaSchema.path("estado").validate(function(valor: Estado){
     //Si el estado es closed, se borra la tarea (aunque esto es en el caso de que se cree una tarea con el estado closed, que no deberia pasar)
     if(valor === Estado.Closed){
-        TareaModel.findByIdAndDelete(this._id);
-        return false;
+        throw new Error('La tarea no se ha creado debido a su estado Closed');
     }
     return Object.values(Estado).includes(valor);
 })
@@ -55,11 +54,14 @@ tareaSchema.post("save", async function (tarea:TareaModelType) {
     await TrabajadorModel.findByIdAndUpdate(tarea.trabajador, {$push: {tareas: tarea._id}});
 })
 
-//Middleware hook, estado closed (si el estado de la tarea es closed, esta se borra)
-tareaSchema.post("findOneAndUpdate", async function (tarea:TareaModelType) {
-    if(tarea.estado === Estado.Closed){
-        await TareaModel.findByIdAndDelete(tarea._id);
+//Middleware hook, estado closed (si el estado de la tarea va a ser closed, se borra la tarea)
+tareaSchema.pre("findOneAndUpdate", async function (this:any, next) { //No he encontrado la manera de tipar el this
+    const estado = this.getUpdate().estado;
+    if(estado === Estado.Closed){
+        await this.model.findOneAndDelete({_id: this.getQuery()._id});
+        throw new Error('La tarea se ha borrado debido a su nuevo estado Closed');
     }
+    next();
 })
 
 //Middleware hook, si la tarea se borra, se borra de la lista de tareas asociadas a los trabajadores

@@ -37,6 +37,7 @@ empresaSchema.post("findOneAndUpdate", async function (doc: EmpresaModelType) {
 
     if (empresa && empresa.trabajadores && empresa.trabajadores.length < 10) {
         await TrabajadorModel.updateMany({_id:{$in: empresa.trabajadores}}, {$set:{empresa: empresa._id}});
+        return;
     }
 
     throw new Error('La empresa no puede tener mas de 10 trabajadores');
