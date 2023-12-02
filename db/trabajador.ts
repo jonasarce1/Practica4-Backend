@@ -14,6 +14,11 @@ const trabajadorSchema = new Schema({
     tareas:[{type: Schema.Types.ObjectId, required: false, ref: "Tarea", default: null}] //Empieza sin tareas
 })
 
+//Validate nombre (que no este vacio y que tenga sentido)
+trabajadorSchema.path("nombre").validate(function (nombre:string) {
+    return nombre.length > 0 && nombre.length < 100;
+})
+
 //Validate email
 trabajadorSchema.path("email").validate(function(valor: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor); //Expresion regular para validar el email, esto indica que el email tiene que tener un @ y un . algo
@@ -32,8 +37,11 @@ trabajadorSchema.path("telefono").validate(function(valor: string) {
 //Validate tareas (no puede tener mas de 10 tareas)
 trabajadorSchema.path("tareas").validate(function (tareas:Array<mongoose.Schema.Types.ObjectId>) {
     if(tareas){
-        return tareas.length <= 10;
+        if(tareas.length > 10){
+            throw new mongoose.Error.ValidationError(new mongoose.Error('El trabajador no puede tener mas de 10 tareas'));
+        }
     }
+    return true;
 })
 
 //Middleware hook para fire, cuando el trabajador no tiene empresa, se borran todas sus tareas

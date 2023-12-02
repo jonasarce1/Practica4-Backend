@@ -6,10 +6,16 @@ import { TareaModel } from "./tarea.ts";
 const Schema = mongoose.Schema;
 
 const empresaSchema = new Schema ({
-    nombre: {type: String, required: true},
+    nombre: {type: String, required: true, unique: true}, //No suele haber dos empresas con el mismo nombre
     tipo: {type: String, required: true, enum: Object.values(Entidad)}, //enum para que solo se puedan meter los valores del enum
     trabajadores: [{type: Schema.Types.ObjectId, required:false, ref:"Trabajador", default: null}] //Empieza sin trabajadores, y no puede haber dos empresas con el mismo trabajador
 })
+
+//Validate nombre (que no este vacio y que tenga sentido)
+empresaSchema.path("nombre").validate(function (nombre:string) {
+    return nombre.length > 0 && nombre.length < 100;
+})
+
 
 //Validate del tipo de empresa
 empresaSchema.path("tipo").validate(function(valor: Entidad) {

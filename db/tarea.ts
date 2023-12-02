@@ -12,6 +12,11 @@ const tareaSchema = new Schema({
     trabajador:{type: Schema.Types.ObjectId, required: true, ref: "Trabajador"}
 })
 
+//Validate nombre (que no este vacio y que tenga sentido)
+tareaSchema.path("nombre").validate(function (nombre:string) {
+    return nombre.length > 0 && nombre.length < 100;
+})
+
 //Validate estado
 tareaSchema.path("estado").validate(function(valor: Estado){
     //Si el estado es closed, se borra la tarea (aunque esto es en el caso de que se cree una tarea con el estado closed, que no deberia pasar)
@@ -32,7 +37,7 @@ tareaSchema.path("empresa").validate(async function (empresa: EmpresaModelType) 
         }
     }
     //lanzamos error de validacion
-    throw new mongoose.Error.ValidationError(this.empresa);
+    throw new mongoose.Error.ValidationError(new mongoose.Error('La empresa y el trabajador no coinciden, el trabajador ha de estar contratado por la empresa'));
 }, "La empresa y el trabajador no coinciden")
 
 //Validate numero de tareas (no puede haber mas de 10 tareas)
