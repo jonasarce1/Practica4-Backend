@@ -14,10 +14,13 @@ export const getTrabajadores = async(_req:Request, res:Response<Array<Trabajador
 
         res.status(200).send(trabajadores);
     }catch(error){
-        if(error instanceof mongoose.Error.ValidationError){ //si el error es del modelo de mongoose
-            res.status(400).send(error); 
-        }else{
+        if (error instanceof mongoose.Error.ValidationError) {
+            const validationErrors = Object.keys(error.errors).map(
+                (key) => error.errors[key].message
+            );
+            res.status(400).send("Error de validacion: " + validationErrors.join(", ")); //Si hay mas de un error de validacion, se separan por comas
+        } else {
             res.status(500).send(error.message);
-        } 
+        }
     }
 }

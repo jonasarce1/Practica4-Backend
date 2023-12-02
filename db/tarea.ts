@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { Tarea, Estado} from "../types.ts";
-import { TrabajadorModel, TrabajadorModelType } from "./trabajador.ts";
+import { TrabajadorModel } from "./trabajador.ts";
 import { EmpresaModelType } from "./empresa.ts";
 
 const Schema = mongoose.Schema;
@@ -29,22 +29,24 @@ tareaSchema.path("estado").validate(function(valor: Estado){
 
 //Validate empresa y trabajador, si la empresa y el trabajador no coinciden, no se crea la tarea
 tareaSchema.path("empresa").validate(async function (empresa: EmpresaModelType) {
-    console.log("Path empresa");
     const trabajador = await TrabajadorModel.findById(this.trabajador);
-    if(empresa && trabajador){
+    if(empresa && trabajador && trabajador.empresa){
         if(empresa._id.toString() === trabajador.empresa.toString()){
             return true;
         }
     }
-    //lanzamos error de validacion
-    throw new mongoose.Error.ValidationError(new mongoose.Error('La empresa y el trabajador no coinciden, el trabajador ha de estar contratado por la empresa'));
+    //lanzamos error de validacion, aunque parezca error normal, hay que lanzar el mensaje asi para que salga en el error de validacion
+    throw new Error('La empresa y el trabajador no coinciden, el trabajador ha de estar contratado por la empresa'); 
 }, "La empresa y el trabajador no coinciden")
 
 //Validate numero de tareas (no puede haber mas de 10 tareas)
-tareaSchema.path("trabajador").validate(function (trabajador:TrabajadorModelType) {
-    if(trabajador.tareas){ //Si tiene tareas el trabajador (para no dar error en caso de que no tenga tareas)
-        return trabajador.tareas.length <= 10;
+tareaSchema.path("trabajador").validate(async function (trabajadorId: mongoose.Schema.Types.ObjectId) {
+    const trabajadorObj = await TrabajadorModel.findById(trabajadorId);
+
+    if(trabajadorObj && trabajadorObj.tareas && trabajadorObj.tareas.length > 10){
+        throw new Error('El trabajador no puede tener mas de 10 tareas');
     }
+
     return true;
 })
 

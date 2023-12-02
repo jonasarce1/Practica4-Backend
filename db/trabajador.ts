@@ -38,7 +38,7 @@ trabajadorSchema.path("telefono").validate(function(valor: string) {
 trabajadorSchema.path("tareas").validate(function (tareas:Array<mongoose.Schema.Types.ObjectId>) {
     if(tareas){
         if(tareas.length > 10){
-            throw new mongoose.Error.ValidationError(new mongoose.Error('El trabajador no puede tener mas de 10 tareas'));
+            throw new Error('El trabajador no puede tener mas de 10 tareas');
         }
     }
     return true;

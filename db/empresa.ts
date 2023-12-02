@@ -16,7 +16,6 @@ empresaSchema.path("nombre").validate(function (nombre:string) {
     return nombre.length > 0 && nombre.length < 100;
 })
 
-
 //Validate del tipo de empresa
 empresaSchema.path("tipo").validate(function(valor: Entidad) {
     return Object.values(Entidad).includes(valor);
@@ -25,7 +24,9 @@ empresaSchema.path("tipo").validate(function(valor: Entidad) {
 //Validate numero de trabajadores (no puede haber mas de 10 trabajadores)
 empresaSchema.path("trabajadores").validate(function (trabajadores:Array<mongoose.Schema.Types.ObjectId>) {
     if(trabajadores){
-        return trabajadores.length <= 10;
+        if(trabajadores.length > 10){
+            throw new Error('La empresa no puede tener mas de 10 trabajadores');
+        }
     }
     return true;
 })
@@ -34,9 +35,11 @@ empresaSchema.path("trabajadores").validate(function (trabajadores:Array<mongoos
 empresaSchema.post("findOneAndUpdate", async function (doc: EmpresaModelType) {
     const empresa = await EmpresaModel.findById(doc._id).exec(); // Accede a la empresa actualizada
 
-    if (empresa && empresa.trabajadores) {
+    if (empresa && empresa.trabajadores && empresa.trabajadores.length < 10) {
         await TrabajadorModel.updateMany({_id:{$in: empresa.trabajadores}}, {$set:{empresa: empresa._id}});
     }
+
+    throw new Error('La empresa no puede tener mas de 10 trabajadores');
 });
 
 //Middleware hook, si la empresa se borra se despiden a todos los trabajadores y se les borran todas las tareas
